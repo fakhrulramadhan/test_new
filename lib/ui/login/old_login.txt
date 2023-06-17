@@ -1,0 +1,57 @@
+import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+
+class LoginView extends StatefulWidget {
+  const LoginView({super.key});
+
+  @override
+  State<LoginView> createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<LoginView> {
+  TextEditingController email = TextEditingController();
+  TextEditingController password = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const msg = Text("messages");
+
+    final username = TextField(
+      controller: email,
+    );
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "MyApp",
+          style: TextStyle(
+              color: Color.fromARGB(255, 48, 116, 50),
+              fontSize: 25,
+              fontWeight: FontWeight.bold),
+        ),
+        actions: const [],
+        backgroundColor: Colors.white,
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 200,
+                width: 200,
+                child: Lottie.asset("assets/json/uilogin.json"),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

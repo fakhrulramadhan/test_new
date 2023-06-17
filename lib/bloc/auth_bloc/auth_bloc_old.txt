@@ -1,0 +1,48 @@
+import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'dart:async';
+import '../../data/repository/login_repository.dart';
+part 'auth_event.dart';
+part 'auth_state.dart';
+
+class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  final LoginRepository loginRepository;
+
+  AuthBloc(super.initialState, {required this.loginRepository});
+
+  //kasih tahu kondisi awal (init)
+  @override
+  AuthState get initialState => AuthUnauthenticated();
+
+  @override
+  Stream<AuthState> mapEventToState(
+    AuthEvent event,
+  ) async* {
+    //jika app nya baru dinyalain
+    if (event is AppStarted) {
+      final bool hasToken = await loginRepository.hasToken();
+
+      if (hasToken) {
+        //jika tokennya ada maka jalankan kondisi authenticated
+        //yield utk lempar state
+        yield AuthAuthenticated(); //sudah di halaman dashboard
+      } else {
+        yield AuthUnauthenticated(); //masih di halaman login
+      }
+    }
+
+    //jika login
+    if (event is LoggedIn) {
+      yield AuthLoading(); //lempar state auth loading
+      await loginRepository
+          .persistToken(event.token); //tunggu dulu utk simpan token
+      yield AuthAuthenticated();
+    }
+
+    if (event is LoggedOut) {
+      yield AuthLoading();
+      await loginRepository.deleteToken();
+      yield AuthUnauthenticated();
+    }
+  }
+}

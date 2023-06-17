@@ -1,0 +1,36 @@
+import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:test_news/data/repository/login_repository.dart';
+import '../auth_bloc/auth_bloc.dart';
+
+part 'login_event.dart';
+part 'login_state.dart';
+
+class LoginBloc extends Bloc<LoginEvent, LoginState> {
+  final LoginRepository loginRepository;
+  final AuthBloc authBloc;
+
+  LoginBloc(super.initialState,
+      {required this.loginRepository, required this.authBloc});
+
+  //initialstatenya ambil dari logininitial
+  @override
+  LoginState get initialState => LoginInitial();
+
+  @override
+  Stream<LoginState> mapEventToState(LoginEvent event) async* {
+    if (event is LoginButtonPressed) {
+      yield LoginLoading();
+
+      try {
+        final data = await loginRepository.login(event.email, event.password);
+
+        //add (utk menambahkan event)
+        authBloc.add(LoggedIn(token: data));
+        yield LoginInitial();
+      } catch (error) {
+        yield LoginFailure(error: error.toString());
+      }
+    }
+  }
+}
